@@ -9,23 +9,11 @@
 ## Functionality
 
 ## Files
- * bin/check-http-json.rb
- * bin/check-http.rb
- * bin/check-https-cert.rb
- * bin/check-last-modified.rb
- * bin/metrics-curl.rb
- * bin/metrics-http-json.rb
- * bin/metrics-http-json-deep.rb
- * bin/check-head-redirect.rb
- * bin/check-http-cors.rb
+ * bin/check-http-json-value.rb
 
 ## Usage
 
-`check-head-redirect.rb` and `check-last-modified.rb` can be used in conjunction with AWS to pull configuration from a specific bucket and file.
-
-This is helpful if you do not want to configure connection information as an argument to the sensu checks. If a bucket and key are specified that the environment the sensu check executes in has access to, or you provide an AWS key and token, the checks will pull the specified JSON file from S3 and merge the JSON config in to the current check configuration.
-
-`check-https-cert.rb` can be used to test for valid and successfully expired certs, amongst other things.
+ Can be used to test json values
 
 ## Installation
 

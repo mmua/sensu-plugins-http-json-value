@@ -62,17 +62,29 @@ class CheckJson < Sensu::Plugin::Check::CLI
   option :insecure, short: '-k', boolean: true, default: false
   option :user, short: '-U', long: '--username USER'
   option :password, short: '-a', long: '--password PASS'
-  option :cert, short: '-c FILE', long: '--cert FILE'
+  option :cert, long: '--cert FILE'
   option :certkey, long: '--cert-key FILE'
   option :cacert, short: '-C FILE', long: '--cacert FILE'
   option :timeout, short: '-t SECS', proc: proc(&:to_i), default: 15
   option :key, short: '-K KEY', long: '--key KEY'
   option :value, short: '-v VALUE', long: '--value VALUE'
-  option :valueGt, long: '--value-greater-than VALUE'
-  option :valueLt, long: '--value-less-than VALUE'
-  option :whole_response, short: '-w', long: '--whole-response', boolean: true, default: false
+  option :valueGt, long: '--value-greater-than', boolean: true, default: true
+  option :valueLt, long: '--value-less-than', boolean: true, default: false
+  option :whole_response, short: '-W', long: '--whole-response', boolean: true, default: false
   option :dump_json, short: '-d', long: '--dump-json', boolean: true, default: false
   option :pretty, long: '--pretty', boolean: true, default: false
+
+  option :warn,
+         short: '-w N',
+         long: '--warn N',
+         description: 'WARNING threshold',
+         proc: proc(&:to_i)
+
+  option :crit,
+         short: '-c N',
+         long: '--crit N',
+         description: 'CRITICAL threshold',
+         proc: proc(&:to_i)
 
   option :response_code,
          long: '--response-code REGEX',
@@ -207,12 +219,20 @@ class CheckJson < Sensu::Plugin::Check::CLI
         message += "equals '#{config[:value]}'"
       end
       if config[:valueGt]
-        raise "unexpected value for key: '#{leaf}' not > '#{config[:valueGt]}'" unless leaf.to_f > config[:valueGt].to_f
-        message += "greater than '#{config[:valueGt]}'"
+	if value >= config[:crit]
+	    critical "greater than '#{config[:crit]}'"
+	elsif value >= config[:warn]
+	    warning "greater than '#{config[:warn]}'"
+	end
+        message += "less than '#{config[:warn]}'"
       end
       if config[:valueLt]
-        raise "unexpected value for key: '#{leaf}' not < '#{config[:valueLt]}'" unless leaf.to_f < config[:valueLt].to_f
-        message += "less than '#{config[:valueLt]}'"
+	if value <= config[:crit]
+	    critical "less than '#{config[:crit]}'"
+	elsif value <= config[:warn]
+	    warning "less than '#{config[:warn]}'"
+	end
+        message += "greater than '#{config[:warn]}'"
       end
 
       ok message
