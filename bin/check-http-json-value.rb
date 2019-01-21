@@ -219,18 +219,18 @@ class CheckJson < Sensu::Plugin::Check::CLI
       end
       if config[:valueLt]
         if leaf.to_f <= config[:crit]
-            critical "less than '#{config[:crit]}'"
+            critical "'#{leaf.to_f}' less than '#{config[:crit]}'"
         elsif leaf.to_f <= config[:warn]
-            warning "less than '#{config[:warn]}'"
+            warning "'#{leaf.to_f}' less than '#{config[:warn]}'"
         end
-        message += "greater than '#{config[:warn]}'"
+        message += "'#{leaf.to_f}' greater than '#{config[:warn]}'"
       else
         if leaf.to_f >= config[:crit]
-            critical "greater than '#{config[:crit]}'"
+            critical "'#{leaf.to_f}' greater than '#{config[:crit]}'"
         elsif leaf.to_f >= config[:warn]
-            warning "greater than '#{config[:warn]}'"
+            warning "'#{leaf.to_f}' greater than '#{config[:warn]}'"
         end
-        message += "less than '#{config[:warn]}'"
+        message += "'#{leaf.to_f}' less than '#{config[:warn]}'"
       end
 
       ok message
