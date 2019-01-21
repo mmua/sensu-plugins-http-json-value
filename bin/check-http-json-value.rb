@@ -68,7 +68,6 @@ class CheckJson < Sensu::Plugin::Check::CLI
   option :timeout, short: '-t SECS', proc: proc(&:to_i), default: 15
   option :key, short: '-K KEY', long: '--key KEY'
   option :value, short: '-v VALUE', long: '--value VALUE'
-  option :valueGt, long: '--value-greater-than', boolean: true, default: true
   option :valueLt, long: '--value-less-than', boolean: true, default: false
   option :whole_response, short: '-W', long: '--whole-response', boolean: true, default: false
   option :dump_json, short: '-d', long: '--dump-json', boolean: true, default: false
@@ -218,21 +217,20 @@ class CheckJson < Sensu::Plugin::Check::CLI
         raise "unexpected value for key: '#{leaf}' != '#{config[:value]}'" unless leaf.to_s == config[:value].to_s
         message += "equals '#{config[:value]}'"
       end
-      if config[:valueGt]
-	if value >= config[:crit]
-	    critical "greater than '#{config[:crit]}'"
-	elsif value >= config[:warn]
-	    warning "greater than '#{config[:warn]}'"
-	end
-        message += "less than '#{config[:warn]}'"
-      end
       if config[:valueLt]
-	if value <= config[:crit]
-	    critical "less than '#{config[:crit]}'"
-	elsif value <= config[:warn]
-	    warning "less than '#{config[:warn]}'"
-	end
+        if leaf.to_f <= config[:crit]
+            critical "less than '#{config[:crit]}'"
+        elsif leaf.to_f <= config[:warn]
+            warning "less than '#{config[:warn]}'"
+        end
         message += "greater than '#{config[:warn]}'"
+      else
+        if leaf.to_f >= config[:crit]
+            critical "greater than '#{config[:crit]}'"
+        elsif leaf.to_f >= config[:warn]
+            warning "greater than '#{config[:warn]}'"
+        end
+        message += "less than '#{config[:warn]}'"
       end
 
       ok message
